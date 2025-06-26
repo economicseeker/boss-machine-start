@@ -1,0 +1,50 @@
+const express = require('express');
+const ideasRouter = express.Router();
+const { getAllFromDatabase, getFromDatabaseById, addToDatabase, updateInstanceInDatabase, deleteFromDatabasebyId } = require('./db');
+
+// GET /api/ideas - get all ideas
+ideasRouter.get('/', (req, res) => {
+  const ideas = getAllFromDatabase('ideas');
+  res.send(ideas);
+});
+
+// POST /api/ideas - create a new idea
+ideasRouter.post('/', (req, res) => {
+  const newIdea = addToDatabase('ideas', req.body);
+  res.status(201).send(newIdea);
+});
+
+// GET /api/ideas/:ideaId - get a single idea by id
+ideasRouter.get('/:ideaId', (req, res) => {
+  const idea = getFromDatabaseById('ideas', req.params.ideaId);
+  if (idea) {
+    res.send(idea);
+  } else {
+    res.status(404).send();
+  }
+});
+
+// PUT /api/ideas/:ideaId - update a single idea by id
+ideasRouter.put('/:ideaId', (req, res) => {
+  if (req.body.id !== req.params.ideaId) {
+    return res.status(400).send();
+  }
+  const updatedIdea = updateInstanceInDatabase('ideas', req.body);
+  if (updatedIdea) {
+    res.send(updatedIdea);
+  } else {
+    res.status(404).send();
+  }
+});
+
+// DELETE /api/ideas/:ideaId - delete a single idea by id
+ideasRouter.delete('/:ideaId', (req, res) => {
+  const deleted = deleteFromDatabasebyId('ideas', req.params.ideaId);
+  if (deleted) {
+    res.status(204).send();
+  } else {
+    res.status(404).send();
+  }
+});
+
+module.exports = ideasRouter; 
