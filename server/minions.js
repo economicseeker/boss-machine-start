@@ -26,6 +26,10 @@ minionsRouter.get('/:minionId', (req, res) => {
 
 // PUT /api/minions/:minionId - update a single minion by id
 minionsRouter.put('/:minionId', (req, res) => {
+  const minion = getFromDatabaseById('minions', req.params.minionId);
+  if (!minion) {
+    return res.status(404).send();
+  }
   if (req.body.id !== req.params.minionId) {
     return res.status(400).send();
   }
@@ -96,7 +100,7 @@ workRouter.delete('/:workId', (req, res) => {
   const allWork = getAllFromDatabase('work');
   const work = allWork.find(w => w.id === req.params.workId);
   if (!work) return res.status(404).send();
-  const deleted = deleteFromDatabaseById('work', req.params.workId);
+  const deleted = deleteFromDatabasebyId('work', req.params.workId);
   if (deleted) {
     res.status(204).send();
   } else {
