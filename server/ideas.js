@@ -16,21 +16,21 @@ ideasRouter.post('/', checkMillionDollarIdea, (req, res) => {
 });
 
 // GET /api/ideas/:ideaId - get a single idea by id
-ideasRouter.get('/:ideaId', (req, res) => {
-  const idea = getFromDatabaseById('ideas', req.params.ideaId);
-  if (idea) {
-    res.send(idea);
-  } else {
-    res.status(404).send();
+ideasRouter.param('ideaId', (req, res, next, id) => {
+  const idea = getFromDatabaseById('ideas', id);
+  if (!idea) {
+    return res.status(404).send();
   }
+  req.idea = idea;
+  next();
+});
+
+ideasRouter.get('/:ideaId', (req, res) => {
+  res.send(req.idea);
 });
 
 // PUT /api/ideas/:ideaId - update a single idea by id
 ideasRouter.put('/:ideaId', checkMillionDollarIdea, (req, res) => {
-  const idea = getFromDatabaseById('ideas', req.params.ideaId);
-  if (!idea) {
-    return res.status(404).send();
-  }
   if (req.body.id !== req.params.ideaId) {
     return res.status(400).send();
   }
